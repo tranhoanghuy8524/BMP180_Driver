@@ -94,24 +94,7 @@ static s32 compute_temp(struct bmp180_data *dev, s32 ut) {
 }
 
 //Tinh ap suat thuc te trang15 muc3.5
-static s32 compute_pressure(struct bmp180_data *dev, s32 up) {
-    s32 b6 = dev->b5 - 4000;
-    s32 x1 = (dev->calib.b2 * ((b6 * b6) >> 12)) >> 11;
-    s32 x2 = (dev->calib.ac2 * b6) >> 11;
-    s32 x3 = x1 + x2;
-    s32 b3 = (((dev->calib.ac1 * 4 + x3) << OSS) + 2) >> 2;
-    x1 = (dev->calib.ac3 * b6) >> 13;
-    x2 = (dev->calib.b1 * ((b6 * b6) >> 12)) >> 16;
-    x3 = ((x1 + x2) + 2) >> 2;
-    u32 b4 = (dev->calib.ac4 * (u32)(x3 + 32768)) >> 15;
-    u32 b7 = ((u32)up - b3) * (50000 >> OSS);
-    s32 p = (b7 < 0x80000000) ? (b7 << 1) / b4 : (b7 / b4) << 1;
-    x1 = (p >> 8) * (p >> 8);
-    x1 = (x1 * 3038) >> 16;
-    x2 = (-7357 * p) >> 16;
-    p += (x1 + x2 + 3791) >> 4;
-    return p;
-}
+
 
 //Tinh do cao tuong doi
 static s32 compute_altitude(s32 pressure) {
