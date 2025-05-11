@@ -8,7 +8,7 @@ File `bmp180_driver.c` chứa mã nguồn của driver kernel.
 File `user_test.c` là một ứng dụng người dùng đơn giản để kiểm tra các chức năng của driver.
 File `bmp180.h` chứa các định nghĩa cần thiết cho cả driver và ứng dụng người dùng (ví dụ: các lệnh ioctl).
 
-Driver này được phát triển bởi HoangHuy\_PhuongHuy\_PhiHung\_NguyenKhanh.
+Driver này được phát triển bởi Hoàng Huy - Phương Huy - Phi Hùng - Nguyễn Khánh
 
 ## Yêu cầu
 
