@@ -1,3 +1,10 @@
+/*
+Thanh vien nhom:
+Tran Hoang Huy - 22146316
+Ngo Phuong Huy - 22146313
+Nguyen Phi Hung - 22146319
+Nguyen Khanh -22146331
+*/
 #include <linux/module.h>
 #include <linux/i2c.h>
 #include <linux/fs.h>
