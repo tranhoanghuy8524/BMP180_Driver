@@ -12,10 +12,10 @@ Dự án này bao gồm:
 * `README.md`: Tài liệu hướng dẫn sử dụng này.
 
 Driver này được phát triển bởi nhóm tác giả: 
-    Tran Hoang Huy - 22146316
-    Ngo Phuong Huy - 22146313
-    Nguyen Phi Hung - 22146319
-    Nguyen Khanh -22146331
+   * Tran Hoang Huy - 22146316
+   * Ngo Phuong Huy - 22146313
+   * Nguyen Phi Hung - 22146319
+   * Nguyen Khanh -22146331
 
 ## 2. Yêu cầu.
 
