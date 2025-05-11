@@ -1,6 +1,6 @@
 # Driver và Ứng Dụng Kiểm Thử cho Cảm Biến BMP180 trên Linux
 
-## 1. Giới thiệu
+## 1. Giới thiệu.
 
 Driver này cung cấp giao diện cho người dùng để tương tác với cảm biến áp suất và nhiệt độ BMP180 thông qua giao thức I2C trên hệ thống Linux. Nó cho phép đọc các thông số quan trọng như nhiệt độ, áp suất khí quyển và ước tính độ cao tương đối.
 
@@ -11,9 +11,13 @@ Dự án này bao gồm:
 * `user_test.c`: Một ứng dụng người dùng đơn giản để minh họa cách sử dụng driver và đọc dữ liệu từ cảm biến.
 * `README.md`: Tài liệu hướng dẫn sử dụng này.
 
-Driver này được phát triển bởi nhóm tác giả: HoangHuy, PhuongHuy, PhiHung, NguyenKhanh.
+Driver này được phát triển bởi nhóm tác giả: 
+   * Tran Hoang Huy - 22146316
+   * Ngo Phuong Huy - 22146313
+   * Nguyen Phi Hung - 22146319
+   * Nguyen Khanh -22146331
 
-## 2. Yêu cầu
+## 2. Yêu cầu.
 
 Để biên dịch và sử dụng driver này, hệ thống của bạn cần đáp ứng các yêu cầu sau:
 

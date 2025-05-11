@@ -5,6 +5,7 @@ Ngo Phuong Huy - 22146313
 Nguyen Phi Hung - 22146319
 Nguyen Khanh -22146331
 */
+
 #include <linux/module.h>
 #include <linux/i2c.h>
 #include <linux/fs.h>
@@ -25,6 +26,7 @@ struct bmp180_calibration {
     u16 ac4, ac5, ac6;
     s16 b1, b2, mb, mc, md;
 };
+
 // Cau truc du lieu chinh
 struct bmp180_data {
     struct i2c_client *client;
@@ -34,6 +36,7 @@ struct bmp180_data {
     struct cdev cdev;
     s32 b5; // tinh nhiet do ap suat
 };
+
 static struct bmp180_data *bmp_dev;
 // 16bit co dau
 static s16 read_s16(struct i2c_client *client, u8 reg) {
@@ -41,12 +44,14 @@ static s16 read_s16(struct i2c_client *client, u8 reg) {
     i2c_smbus_read_i2c_block_data(client, reg, 2, buf);
     return (buf[0] << 8) | buf[1];
 }
+
 //16bit khong dau
 static u16 read_u16(struct i2c_client *client, u8 reg) {
     u8 buf[2];
     i2c_smbus_read_i2c_block_data(client, reg, 2, buf);
     return (buf[0] << 8) | buf[1];
 }
+
 //Doc he so trang 13, muc3.4
 static void read_calibration_data(struct bmp180_data *dev) {
     struct i2c_client *client = dev->client;
@@ -62,12 +67,14 @@ static void read_calibration_data(struct bmp180_data *dev) {
     dev->calib.mc = read_s16(client, BMP180_REG_CAL_MC);
     dev->calib.md = read_s16(client, BMP180_REG_CAL_MD);
 }
+
 //Nhiet do chua bu trang 14 muc 3.5
 static s32 read_uncomp_temp(struct i2c_client *client) {
     i2c_smbus_write_byte_data(client, BMP180_REG_CONTROL, BMP180_CMD_TEMP);
     msleep(5);
     return read_u16(client, BMP180_REG_RESULT);
 }
+
 //Ap suat chua bu trang 14 muc 3.5
 static s32 read_uncomp_pressure(struct i2c_client *client) {
     i2c_smbus_write_byte_data(client, BMP180_REG_CONTROL, BMP180_CMD_PRESSURE + (OSS << 6));
@@ -77,6 +84,7 @@ static s32 read_uncomp_pressure(struct i2c_client *client) {
     u8 xlsb = i2c_smbus_read_byte_data(client, BMP180_REG_RESULT + 2);
     return ((msb << 16) | (lsb << 8) | xlsb) >> (8 - OSS);
 }
+
 //Tinh nhiet do thuc trang 15 muc 3.5
 static s32 compute_temp(struct bmp180_data *dev, s32 ut) {
     s32 x1 = ((ut - dev->calib.ac6) * dev->calib.ac5) >> 15;
@@ -84,6 +92,7 @@ static s32 compute_temp(struct bmp180_data *dev, s32 ut) {
     dev->b5 = x1 + x2;
     return (dev->b5 + 8) >> 4;
 }
+
 //Tinh ap suat thuc te trang15 muc3.5
 static s32 compute_pressure(struct bmp180_data *dev, s32 up) {
     s32 b6 = dev->b5 - 4000;
@@ -103,11 +112,13 @@ static s32 compute_pressure(struct bmp180_data *dev, s32 up) {
     p += (x1 + x2 + 3791) >> 4;
     return p;
 }
+
 //Tinh do cao tuong doi
 static s32 compute_altitude(s32 pressure) {
     double ratio = (double)pressure / 101325.0;
     return (s32)(44330.0 * (1.0 - pow(ratio, 0.1903)));
 }
+
 // in out
 static long bmp180_ioctl(struct file *file, unsigned int cmd, unsigned long arg) {
     int result;
@@ -136,10 +147,12 @@ static long bmp180_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
     return copy_to_user((int __user *)arg, &result, sizeof(int)) ? -EFAULT : 0;
 }
+
 static struct file_operations bmp180_fops = {
     .owner = THIS_MODULE,
     .unlocked_ioctl = bmp180_ioctl,
 };
+
 //
 static int bmp180_probe(struct i2c_client *client, const struct i2c_device_id *id) {
     int ret;
@@ -156,6 +169,7 @@ static int bmp180_probe(struct i2c_client *client, const struct i2c_device_id *i
     pr_info("BMP180 driver probed\n");
     return 0;
 }
+
 //
 static void bmp180_remove(struct i2c_client *client) {
     device_destroy(bmp_dev->class, bmp_dev->devt);

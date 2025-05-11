@@ -1,10 +1,11 @@
 /*
 Thanh vien nhom:
-Tran Hoang Huy - 22146316
-Ngo Phuong Huy - 22146313
+Tran Hoang Huy  - 22146316
+Ngo Phuong Huy  - 22146313
 Nguyen Phi Hung - 22146319
-Nguyen Khanh -22146331
+Nguyen Khanh    - 22146331
 */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -40,7 +41,6 @@ int main() {
     } else {
         perror("ioctl (get altitude) failed");
     }
-
     close(fd);
     return 0;
 }
