@@ -117,37 +117,12 @@ Driver kernel `bmp180_driver.c` thực hiện các tác vụ sau:
 * **Xử lý lệnh `ioctl`:** Hàm `bmp180_ioctl` là điểm vào cho các lệnh `ioctl` từ không gian người dùng. Dựa trên lệnh được nhận (`cmd`), nó sẽ gọi các hàm tương ứng để đọc nhiệt độ, áp suất hoặc tính toán độ cao và trả về kết quả cho ứng dụng người dùng.
 * **Gỡ bỏ driver:** Hàm `bmp180_remove` được gọi khi module driver được gỡ bỏ. Nó thực hiện các thao tác dọn dẹp như hủy device, hủy class và giải phóng bộ nhớ đã cấp phát.
 
-## 7. Ví dụ ứng dụng
-
-### 7.1. Trạm thời tiết đơn giản
-
-#### 7.1.1. Sơ đồ kết nối (ví dụ với Raspberry Pi)
+## 7. Sơ đồ kết nối (ví dụ với Raspberry Pi)
 
 * BMP180 VCC $\rightarrow$ 3.3V Raspberry Pi
 * BMP180 GND $\rightarrow$ GND Raspberry Pi
 * BMP180 SDA $\rightarrow$ SDA (GPIO 2) Raspberry Pi
 * BMP180 SCL $\rightarrow$ SCL (GPIO 3) Raspberry Pi
-
-#### 7.1.2. Code ví dụ
-
-Sử dụng đoạn chương trình ở mục 5 để thu thập dữ liệu và hiển thị ra terminal hoặc ghi vào file log.
-
-### 7.2. Đo độ cao cho dự án bay
-
-#### 7.2.1. Sơ đồ kết nối
-
-Kết nối tương tự như trạm thời tiết.
-
-#### 7.2.2. Code ví dụ
-
-Ứng dụng `user_test.c` đã bao gồm chức năng đọc độ cao. Bạn có thể sử dụng giá trị trả về để điều khiển các hệ thống khác trong dự án bay của mình.
-
-Tính độ cao từ áp suất theo công thức:
-
-float altitude = 44330.0 * (1.0 - pow((float)pressure / 101325.0, 0.1903));
-
-(Công thức này đã được tích hợp vào driver kernel).
-
 
 ## 8. Gỡ bỏ Driver Kernel
 
@@ -155,4 +130,14 @@ float altitude = 44330.0 * (1.0 - pow((float)pressure / 101325.0, 0.1903));
 
 ```bash
 sudo rmmod bmp180_driver
-"
+
+## 9. Thông tin lên hệ
+Đại diện: Trần Hoàng Huy
+Email: tranhoanghuy8524@gmail.com
+
+
+
+
+
+
+
