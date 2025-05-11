@@ -11,7 +11,11 @@ Dự án này bao gồm:
 * `user_test.c`: Một ứng dụng người dùng đơn giản để minh họa cách sử dụng driver và đọc dữ liệu từ cảm biến.
 * `README.md`: Tài liệu hướng dẫn sử dụng này.
 
-Driver này được phát triển bởi nhóm tác giả: HoangHuy, PhuongHuy, PhiHung, NguyenKhanh.
+Driver này được phát triển bởi nhóm tác giả: 
+    Tran Hoang Huy - 22146316
+    Ngo Phuong Huy - 22146313
+    Nguyen Phi Hung - 22146319
+    Nguyen Khanh -22146331
 
 ## 2. Yêu cầu.
 
