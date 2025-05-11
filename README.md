@@ -130,7 +130,7 @@ Driver kernel `bmp180_driver.c` thực hiện các tác vụ sau:
 
 ```bash
 sudo rmmod bmp180_driver
-
+```
 ## 9. Thông tin lên hệ
 Đại diện: Trần Hoàng Huy
 Email: tranhoanghuy8524@gmail.com
