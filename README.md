@@ -1,35 +1,42 @@
 # Driver và Ứng Dụng Kiểm Thử cho Cảm Biến BMP180 trên Linux
 
-## Giới thiệu
+## 1. Giới thiệu
 
-Driver này cung cấp giao diện cho người dùng để tương tác với cảm biến áp suất và nhiệt độ BMP180 thông qua giao thức I2C trên hệ thống Linux. Nó cho phép đọc nhiệt độ, áp suất và tính toán độ cao tương đối.
+Driver này cung cấp giao diện cho người dùng để tương tác với cảm biến áp suất và nhiệt độ BMP180 thông qua giao thức I2C trên hệ thống Linux. Nó cho phép đọc các thông số quan trọng như nhiệt độ, áp suất khí quyển và ước tính độ cao tương đối.
 
-File `bmp180_driver.c` chứa mã nguồn của driver kernel.
-File `user_test.c` là một ứng dụng người dùng đơn giản để kiểm tra các chức năng của driver.
-File `bmp180.h` chứa các định nghĩa cần thiết cho cả driver và ứng dụng người dùng (ví dụ: các lệnh ioctl).
+Dự án này bao gồm:
 
-Driver này được phát triển bởi Hoàng Huy - Phương Huy - Phi Hùng - Nguyễn Khánh
+* `bmp180_driver.c`: Mã nguồn của driver kernel cho cảm biến BMP180.
+* `bmp180.h`: File header chứa các định nghĩa, cấu trúc và các lệnh `ioctl` được sử dụng bởi cả driver và ứng dụng người dùng.
+* `user_test.c`: Một ứng dụng người dùng đơn giản để minh họa cách sử dụng driver và đọc dữ liệu từ cảm biến.
+* `README.md`: Tài liệu hướng dẫn sử dụng này.
 
-## Yêu cầu
+Driver này được phát triển bởi nhóm tác giả: HoangHuy, PhuongHuy, PhiHung, NguyenKhanh.
 
-* Hệ thống Linux có hỗ trợ I2C.
-* Kernel headers tương ứng với phiên bản kernel đang chạy.
-* Công cụ biên dịch (ví dụ: `gcc`, `make`).
-* Cảm biến BMP180 được kết nối đúng cách với bo mạch thông qua giao tiếp I2C.
+## 2. Yêu cầu
 
-## Cài đặt Driver
+Để biên dịch và sử dụng driver này, hệ thống của bạn cần đáp ứng các yêu cầu sau:
 
-1.  **Sao chép các file driver:** Sao chép file `bmp180_driver.c` và `bmp180.h` vào thư mục nguồn driver của bạn (ví dụ: một thư mục `bmp180` trong thư mục bạn thường build kernel modules).
+* Hệ thống Linux có hỗ trợ giao tiếp I2C (đã cấu hình và có các module kernel liên quan).
+* Kernel headers tương ứng với phiên bản kernel đang chạy trên hệ thống.
+* Bộ công cụ phát triển C/C++ (ví dụ: `gcc`, `make`).
+* Cảm biến BMP180 được kết nối chính xác với bo mạch chủ thông qua giao tiếp I2C. Bạn cần xác định địa chỉ I2C của cảm biến (thường là `0x77` hoặc `0x76`). Driver này mặc định hoạt động với địa chỉ được định nghĩa trong code (`BMP180_I2C_ADDR`).
+
+## 3. Cài đặt Driver Kernel
+
+Các bước sau đây hướng dẫn cách biên dịch và cài đặt driver kernel:
+
+1.  **Sao chép các file driver:** Tạo một thư mục cho driver và sao chép các file `bmp180_driver.c` và `bmp180.h` vào thư mục đó.
 
     ```bash
     mkdir bmp180_driver
     cd bmp180_driver
-    # Giả sử bạn đã có bmp180_driver.c và bmp180.h trong thư mục này
+    # Giả sử bạn đã có bmp180_driver.c và bmp180.h
     cp ../bmp180_driver.c .
     cp ../bmp180.h .
     ```
 
-2.  **Tạo file `Makefile`:** Tạo một file `Makefile` trong cùng thư mục (`bmp180_driver`) với nội dung sau:
+2.  **Tạo file `Makefile`:** Tạo một file `Makefile` trong cùng thư mục với nội dung sau:
 
     ```makefile
     obj-m += bmp180_driver.o
@@ -44,74 +51,93 @@ Driver này được phát triển bởi Hoàng Huy - Phương Huy - Phi Hùng -
         $(MAKE) -C $(KDIR) M=$(PWD) clean
     ```
 
-3.  **Build driver:** Chạy lệnh `make` để biên dịch driver:
+3.  **Biên dịch driver:** Sử dụng lệnh `make` để biên dịch driver kernel:
 
     ```bash
     make
     ```
 
-    Lệnh này sẽ tạo ra file module `bmp180_driver.ko`.
+    Lệnh này sẽ tạo ra file module kernel `bmp180_driver.ko`.
 
-4.  **Load driver:** Sử dụng lệnh `insmod` để load module vào kernel (cần quyền root):
+4.  **Load driver vào kernel:** Sử dụng lệnh `insmod` với quyền `sudo` để load module vào kernel:
 
     ```bash
-    sudo insmod bmp180.ko
+    sudo insmod bmp180_driver.ko
     ```
 
-5.  **Kiểm tra device node:** Sau khi load, một device node `/dev/bmp180` sẽ được tạo. Kiểm tra sự tồn tại của nó:
+5.  **Kiểm tra device node:** Sau khi driver được load thành công, một device node có tên `bmp180` sẽ được tạo trong thư mục `/dev/`. Bạn có thể kiểm tra nó bằng lệnh:
 
     ```bash
     ls -l /dev/bmp180
     ```
 
-## Sử dụng Driver
+## 4. Sử dụng Driver
 
-Driver này cung cấp các chức năng sau thông qua cơ chế `ioctl` trên device file `/dev/bmp180_driver`:
+Driver này cung cấp các chức năng đọc dữ liệu cảm biến thông qua cơ chế `ioctl` trên device file `/dev/bmp180`. Các lệnh `ioctl` được định nghĩa trong file `bmp180.h`:
 
-* `BMP180_IOCTL_GET_TEMP_C`: Lấy nhiệt độ theo độ Celsius (giá trị trả về đã được nhân với 10, ví dụ 255 tương ứng 25.5 °C).
-* `BMP180_IOCTL_GET_PRESSURE`: Lấy áp suất theo đơn vị Pascal (Pa).
-* `BMP180_IOCTL_GET_ALTITUDE`: Lấy độ cao tương đối so với áp suất chuẩn ở mực nước biển (101325 Pa), đơn vị mét.
+* `BMP180_IOCTL_GET_TEMP_C`: Lấy nhiệt độ theo độ Celsius. Giá trị trả về là một số nguyên, đã được nhân với 10 để giữ độ chính xác một chữ số thập phân (ví dụ: 255 tương ứng với 25.5 °C).
+* `BMP180_IOCTL_GET_PRESSURE`: Lấy áp suất khí quyển theo đơn vị Pascal (Pa).
+* `BMP180_IOCTL_GET_ALTITUDE`: Lấy độ cao tương đối so với áp suất mực nước biển tiêu chuẩn (101325 Pa), đơn vị mét.
 
-## Chạy Ứng Dụng Kiểm Thử (`user_test.c`)
+## 5. Chạy Ứng Dụng Kiểm Thử (`user_test.c`)
 
-1.  **Sao chép file:** Sao chép file `user_test.c` và `bmp180.h` vào một thư mục (ví dụ, cùng thư mục với nơi bạn build driver).
+Ứng dụng `user_test.c` là một ví dụ đơn giản về cách tương tác với driver BMP180.
 
-2.  **Biên dịch ứng dụng:** Sử dụng `gcc` để biên dịch ứng dụng kiểm thử:
+1.  **Sao chép file:** Đảm bảo bạn có các file `user_test.c` và `bmp180.h` trong cùng một thư mục.
+
+2.  **Biên dịch ứng dụng:** Sử dụng `gcc` để biên dịch ứng dụng:
 
     ```bash
     gcc user_test.c -o user_test -lm
     ```
 
-    Tham số `-lm` liên kết với thư viện toán học (cần cho hàm `pow` trong kernel, dù kết quả trả về user-space là số nguyên).
+    Tham số `-lm` được thêm vào để liên kết với thư viện toán học (cần thiết cho hàm `pow` được sử dụng trong kernel để tính toán độ cao).
 
-3.  **Chạy ứng dụng:** Đảm bảo driver `bmp180_driver.ko` đã được load, sau đó chạy ứng dụng:
+3.  **Chạy ứng dụng:** Đảm bảo driver `bmp180_driver.ko` đã được load vào kernel. Sau đó, chạy ứng dụng kiểm thử với quyền người dùng thông thường:
 
     ```bash
     ./user_test
     ```
 
-    Ứng dụng sẽ in ra các giá trị nhiệt độ, áp suất và độ cao đọc được từ cảm biến BMP180.
+    Ứng dụng sẽ mở device file `/dev/bmp180` và sử dụng các lệnh `ioctl` để đọc nhiệt độ, áp suất và độ cao, sau đó in các giá trị này ra màn hình.
 
-## Các Chức Năng Chi Tiết trong Driver
+## 6. Các Chức Năng Chi Tiết trong Driver (`bmp180_driver.c`)
 
-Driver `bmp180_driver.c` thực hiện các bước sau:
+Driver kernel `bmp180_driver.c` thực hiện các tác vụ sau:
 
-* **Đọc hệ số hiệu chuẩn:** Hàm `read_calibration_data` đọc các hệ số hiệu chuẩn từ các thanh ghi EEPROM của BMP180 và lưu trữ chúng trong cấu trúc `bmp180_calibration`.
+* **Khởi tạo và thăm dò thiết bị:** Hàm `bmp180_probe` được gọi khi một thiết bị BMP180 được phát hiện trên bus I2C. Nó cấp phát bộ nhớ cho cấu trúc dữ liệu của driver, lưu trữ con trỏ `i2c_client`, đọc các hệ số hiệu chuẩn từ EEPROM của cảm biến bằng hàm `read_calibration_data`, đăng ký character device và tạo device file `/dev/bmp180`.
+* **Đọc dữ liệu hiệu chuẩn:** Hàm `read_calibration_data` đọc 11 hệ số hiệu chuẩn (AC1-AC6, B1, B2, MB, MC, MD) từ các thanh ghi tương ứng của BMP180. Các hệ số này rất quan trọng để chuyển đổi các giá trị thô thành nhiệt độ và áp suất chính xác.
 * **Đọc giá trị chưa bù:**
-    * `read_uncomp_temp`: Gửi lệnh để bắt đầu đo nhiệt độ và đọc giá trị nhiệt độ thô (UT).
-    * `read_uncomp_pressure`: Gửi lệnh để bắt đầu đo áp suất (với độ phân giải OSS được định nghĩa) và đọc giá trị áp suất thô (UP).
+    * `read_uncomp_temp`: Gửi lệnh đến BMP180 để bắt đầu quá trình đo nhiệt độ và sau đó đọc giá trị nhiệt độ thô (UT).
+    * `read_uncomp_pressure`: Tương tự, gửi lệnh để đo áp suất với độ phân giải lấy mẫu (OSS) được cấu hình và đọc giá trị áp suất thô (UP).
 * **Tính toán giá trị thực:**
-    * `compute_temp`: Sử dụng UT và các hệ số hiệu chuẩn để tính toán nhiệt độ thực tế. Giá trị `b5` được lưu trữ để sử dụng trong tính toán áp suất. Nhiệt độ trả về được nhân với 10.
-    * `compute_pressure`: Sử dụng UP, `b5` và các hệ số hiệu chuẩn để tính toán áp suất thực tế.
-    * `compute_altitude`: Sử dụng áp suất đã tính toán để ước tính độ cao tương đối dựa trên công thức khí quyển tiêu chuẩn.
-* **Giao diện `ioctl`:** Hàm `bmp180_ioctl` xử lý các lệnh `ioctl` từ không gian người dùng để trả về nhiệt độ, áp suất hoặc độ cao đã tính toán.
-* **Tạo device file:** Driver đăng ký một character device (`/dev/bmp180_driver`) để người dùng có thể tương tác.
-* **Quản lý module:** Các hàm `bmp180_probe` và `bmp180_remove` xử lý việc khởi tạo và giải phóng tài nguyên khi module được load và unload.
+    * `compute_temp`: Sử dụng giá trị UT và các hệ số hiệu chuẩn để tính toán nhiệt độ thực tế theo thuật toán được mô tả trong datasheet của BMP180. Giá trị trung gian `b5` được lưu trữ để sử dụng trong tính toán áp suất. Nhiệt độ trả về được nhân với 10.
+    * `compute_pressure`: Sử dụng giá trị UP, `b5` và các hệ số hiệu chuẩn để tính toán áp suất khí quyển thực tế.
+    * `compute_altitude`: Ước tính độ cao tương đối dựa trên áp suất hiện tại và áp suất tham chiếu ở mực nước biển (mặc định là 101325 Pa). Công thức được sử dụng dựa trên mô hình khí quyển tiêu chuẩn.
+* **Xử lý lệnh `ioctl`:** Hàm `bmp180_ioctl` là điểm vào cho các lệnh `ioctl` từ không gian người dùng. Dựa trên lệnh được nhận (`cmd`), nó sẽ gọi các hàm tương ứng để đọc nhiệt độ, áp suất hoặc tính toán độ cao và trả về kết quả cho ứng dụng người dùng.
+* **Gỡ bỏ driver:** Hàm `bmp180_remove` được gọi khi module driver được gỡ bỏ. Nó thực hiện các thao tác dọn dẹp như hủy device, hủy class và giải phóng bộ nhớ đã cấp phát.
 
-## Gỡ bỏ Driver
+## 7. Sơ đồ kết nối (ví dụ với Raspberry Pi)
 
-Để gỡ bỏ driver khỏi kernel:
+* BMP180 VCC $\rightarrow$ 3.3V Raspberry Pi
+* BMP180 GND $\rightarrow$ GND Raspberry Pi
+* BMP180 SDA $\rightarrow$ SDA (GPIO 2) Raspberry Pi
+* BMP180 SCL $\rightarrow$ SCL (GPIO 3) Raspberry Pi
+
+## 8. Gỡ bỏ Driver Kernel
+
+Để gỡ bỏ driver kernel khỏi hệ thống, sử dụng lệnh sau với quyền `sudo`:
 
 ```bash
-sudo rmmod bmp180
+sudo rmmod bmp180_driver
 ```
+## 9. Thông tin lên hệ
+Đại diện: Trần Hoàng Huy
+Email: tranhoanghuy8524@gmail.com
+
+
+
+
+
+
+
